@@ -12,7 +12,7 @@ import pyclipper
 import Polygon as plg
 import os
 
-ic15_root_dir = '/Users/vigi99/AirtelDEV/word_localization_engine/text_localization_data'
+ic15_root_dir = '/run/media/vigi99/SDD/text_localization_data'
 ic15_train_data_dir = os.path.join(ic15_root_dir, 'train/images')
 ic15_train_gt_dir = os.path.join(ic15_root_dir, 'train/labels')
 ic15_test_data_dir = os.path.join(ic15_root_dir, 'val/images')
@@ -25,7 +25,7 @@ def get_img(img_path):
         img = cv2.imread(img_path)
         img = img[:, :, [2, 1, 0]]
     except Exception as e:
-        print img_path
+        print(img_path)
         raise
     return img
 
@@ -37,17 +37,18 @@ def get_bboxes(img, gt_path):
     for line in lines:
         line = util.str.remove_all(line, '\xef\xbb\xbf')
         gt = util.str.split(line, ',')
-        if len(gt) >= 8:
-            box = [int(gt[i]) for i in range(8)]
-        else:
-            tlx, tly, brx, bry = [int(gt[i]) for i in range(4)]
-            box = [tlx, tly, brx, tly, brx, bry, tlx, bry]
-        if gt[-1][0] == '#':
-            tags.append(False)
-        else:
-            tags.append(True)
-        box = np.asarray(box) / ([w * 1.0, h * 1.0] * 4)
-        bboxes.append(box)
+        if len(gt) > 4:
+            if len(gt) >= 8:
+                box = [int(gt[i]) for i in range(8)]
+            else:
+                tlx, tly, brx, bry = [int(gt[i]) for i in range(4)]
+                box = [tlx, tly, brx, tly, brx, bry, tlx, bry]
+            if gt[-1][0] == '#':
+                tags.append(False)
+            else:
+                tags.append(True)
+            box = np.asarray(box) / ([w * 1.0, h * 1.0] * 4)
+            bboxes.append(box)
     return np.array(bboxes), tags
 
 def random_horizontal_flip(imgs):
