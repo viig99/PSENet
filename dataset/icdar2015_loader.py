@@ -10,12 +10,13 @@ import torchvision.transforms as transforms
 import torch
 import pyclipper
 import Polygon as plg
+import os
 
-ic15_root_dir = './data/ICDAR2015/Challenge4/'
-ic15_train_data_dir = ic15_root_dir + 'ch4_training_images/'
-ic15_train_gt_dir = ic15_root_dir + 'ch4_training_localization_transcription_gt/'
-ic15_test_data_dir = ic15_root_dir + 'ch4_test_images/'
-ic15_test_gt_dir = ic15_root_dir + 'ch4_test_localization_transcription_gt/'
+ic15_root_dir = '/Users/vigi99/AirtelDEV/word_localization_engine/text_localization_data'
+ic15_train_data_dir = os.path.join(ic15_root_dir, 'train/images')
+ic15_train_gt_dir = os.path.join(ic15_root_dir, 'train/labels')
+ic15_test_data_dir = os.path.join(ic15_root_dir, 'val/images')
+ic15_test_gt_dir = os.path.join(ic15_root_dir, 'val/labels')
 
 random.seed(123456)
 
@@ -36,11 +37,15 @@ def get_bboxes(img, gt_path):
     for line in lines:
         line = util.str.remove_all(line, '\xef\xbb\xbf')
         gt = util.str.split(line, ',')
+        if len(gt) >= 8:
+            box = [int(gt[i]) for i in range(8)]
+        else:
+            tlx, tly, brx, bry = [int(gt[i]) for i in range(4)]
+            box = [tlx, tly, brx, tly, brx, bry, tlx, bry]
         if gt[-1][0] == '#':
             tags.append(False)
         else:
             tags.append(True)
-        box = [int(gt[i]) for i in range(8)]
         box = np.asarray(box) / ([w * 1.0, h * 1.0] * 4)
         bboxes.append(box)
     return np.array(bboxes), tags
@@ -152,8 +157,8 @@ class IC15Loader(data.Dataset):
         self.kernel_num = kernel_num
         self.min_scale = min_scale
 
-        data_dirs = [ic15_train_data_dir]
-        gt_dirs = [ic15_train_gt_dir]
+        data_dirs = [os.path.join(ic15_train_data_dir, folder) for folder in os.listdir(ic15_train_data_dir) if folder != '.DS_Store']
+        gt_dirs = [os.path.join(ic15_train_gt_dir, folder) for folder in os.listdir(ic15_train_gt_dir) if folder != '.DS_Store']
 
         self.img_paths = []
         self.gt_paths = []
@@ -166,11 +171,11 @@ class IC15Loader(data.Dataset):
             img_paths = []
             gt_paths = []
             for idx, img_name in enumerate(img_names):
-                img_path = data_dir + img_name
+                img_path = os.path.join(data_dir, img_name)
                 img_paths.append(img_path)
                 
                 gt_name = 'gt_' + img_name.split('.')[0] + '.txt'
-                gt_path = gt_dir + gt_name
+                gt_path = os.path.join(gt_dir, gt_name)
                 gt_paths.append(gt_path)
 
             self.img_paths.extend(img_paths)
