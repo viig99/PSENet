@@ -1,4 +1,4 @@
-CXXFLAGS = -I include  -std=c++11 -O3
+CXXFLAGS = -I include -std=c++11 -O3 -I /usr/include/opencv4
 
 DEPS = lanms.h $(shell find include -xtype f)
 CXX_SOURCES = adaptor.cpp include/clipper/clipper.cpp

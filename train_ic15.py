@@ -175,8 +175,8 @@ def adjust_learning_rate(args, optimizer, epoch):
         for param_group in optimizer.param_groups:
             param_group['lr'] = args.lr
 
-def save_checkpoint(state, checkpoint='checkpoint', filename='checkpoint.pth.tar'):
-    filepath = os.path.join(checkpoint, filename)
+def save_checkpoint(state, checkpoint='checkpoint', filename='checkpoint_{:s}.pth.tar'):
+    filepath = os.path.join(checkpoint, filename.format(str(state.get('epoch', 1))))
     torch.save(state, filepath)
 
 def main(args):

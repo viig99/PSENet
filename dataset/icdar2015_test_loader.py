@@ -8,10 +8,11 @@ import cv2
 import random
 import torchvision.transforms as transforms
 import torch
+import os
 
-ic15_root_dir = './data/ICDAR2015/Challenge4/'
-ic15_test_data_dir = ic15_root_dir + 'ch4_test_images/'
-ic15_test_gt_dir = ic15_root_dir + 'ch4_test_localization_transcription_gt/'
+ic15_root_dir = '/run/media/vigi99/SDD/text_localization_data'
+ic15_test_data_dir = os.path.join(ic15_root_dir, 'val/images/icdar2015')
+ic15_test_gt_dir = os.path.join(ic15_root_dir, 'val/labels/icdar2015')
 
 random.seed(123456)
 
@@ -42,7 +43,7 @@ class IC15TestLoader(data.Dataset):
 
             img_paths = []
             for idx, img_name in enumerate(img_names):
-                img_path = data_dir + img_name
+                img_path = os.path.join(data_dir, img_name)
                 img_paths.append(img_path)
             
             self.img_paths.extend(img_paths)
